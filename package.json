@@ -16,6 +16,7 @@
     "@entropy1729/aleo-js": "^0.1.5",
     "@entropy1729/aleo-sdk": "^0.3.8",
     "@hot-loader/react-dom": "^17.0.2",
+    "@metamask/safe-event-emitter": "^2.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.1"
