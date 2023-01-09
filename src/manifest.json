@@ -1,11 +1,15 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Aleo hackathon wallet",
   "description": "Aleo wallet compatible with ARC-1193",
-  "background": { "scripts": ["background.bundle.js"] },
+  "options_page": "options.html",
+  "background": { "service_worker": "background.bundle.js" },
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icon-34.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
   },
   "icons": {
     "128": "icon-128.png"
@@ -21,15 +25,25 @@
     "activeTab",
     "storage",
     "tabs",
-    "notifications",
-    "https://api.backend.ai/",
-    "https://lablup.onprem.backend.ai/"
+    "notifications"
   ],
   "host_permissions": ["<all_urls>"],
   "devtools_page": "devtools.html",
-  "web_accessible_resources": ["api.bundle.js", "content.styles.css", "icon-128.png", "icon-34.png"],
+  "web_accessible_resources": [
+    {
+        "resources": [ "api.bundle.js"],
+        "matches": [ "<all_urls>" ]
+    },
+    {
+      "resources": ["content.styles.css", "icon-128.png", "icon-34.png"],
+      "matches": []
+    }
+  ],
   "externally_connectable": {
     "matches": ["https://*/*"]
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
+    "sandbox": "script-src 'self' 'wasm-unsafe-eval'; sandbox allow-scripts; script-src 'self'; object-src 'self'"
+  }
 }

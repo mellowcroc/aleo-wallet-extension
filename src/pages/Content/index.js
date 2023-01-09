@@ -11,7 +11,7 @@ function loadScript() {
   numTries++;
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = chrome.extension.getURL('api.bundle.js');
+    script.src = chrome.runtime.getURL('api.bundle.js');
 
     script.onload = () => resolve(script);
     script.onerror = (e) => reject(new Error("[contentScript] Script load error: " + e));
