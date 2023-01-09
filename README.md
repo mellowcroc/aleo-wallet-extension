@@ -1,3 +1,7 @@
+# aleo-wallet-extension
+
+This is a chrome extension application that implements [ARC-1193](https://github.com/AleoHQ/ARCs/pull/31).
+
 ## Installing and Running
 
 ### Procedures:
