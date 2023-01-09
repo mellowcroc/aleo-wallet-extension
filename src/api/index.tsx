@@ -1,89 +1,45 @@
-// import { CustomWindow, DataSignResultEvent, PublicKeyResultEvent, BalanceResultEvent } from '../common/types';
+import { Account, NodeConnection, Signature } from '@entropy1729/aleo-js';
+
 export interface CustomWindow extends Window {
   coinbaseAleo?: any;
 }
 
-export interface PublicKeyResultEvent extends Event {
-  detail?: {
-    publicKey: string;
-    success: boolean;
-    error: any;
-  };
-}
-
-console.log('coinbaseAleo');
 declare let window: CustomWindow;
 
-const TARGET_ORIGIN = '*';
-
 class CoinbaseAleo {
-  //   public signRequest = (payload: any) => {
-  //     return new Promise(async (resolve, reject) => {
-  //       try {
-  //         const data = Object.assign({fromClient: true}, payload);
-  //         window.postMessage({action: "sign", detail: data}, TARGET_ORIGIN)
-  //         window.addEventListener("sign:result", function signResultListener(event: DataSignResultEvent) {
-  //           console.log("[api] sign:result:",event)
-  //           console.log("[api] comparing data:",event.detail && event.detail.data,data)
-  //           let shouldRespond = true;
-  //           if (!event.detail || !event.detail.data) {
-  //               throw new Error("Invalid signing result");
+  account: Account;
+  connection: NodeConnection;
 
-  //           } else {
-  //               Object.keys(event.detail.data).forEach(field => {
-  //                   if (!event.detail || !event.detail.data || !event.detail.data[field] ||
-  //                           event.detail.data[field] === undefined || !data[field] ||
-  //                           data[field] === undefined || event.detail.data[field] !== data[field]) {
-  //                       shouldRespond = false;
-  //                   }
-  //               })
-  //           }
-  //           if (shouldRespond) {
-  //               window.removeEventListener("sign:result", signResultListener);
-  //               resolve(event.detail);
-  //           }
-  //         })
-  //       } catch(e) {
-  //         console.log("[api] signRequest error:",e)
-  //         reject({ data: null, signature: '', fields: null, success: false, error: e })
-  //       }
-  //     })
-  //   }
+  constructor() {
+    const enc = new TextEncoder();
+    this.account = new Account({
+      seed: enc.encode('ce8b23470222bdee5f894ee77b607391'),
+    });
+    this.connection = new NodeConnection('http://vm.aleo.org/api');
+    this.connection.setAccount(this.account);
+  }
 
   public getPublicKey = () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        window.postMessage({ action: 'getPublicKey' }, TARGET_ORIGIN);
-        window.addEventListener(
-          'getPublicKey:result',
-          function pubKeyListener(event: PublicKeyResultEvent) {
-            console.log('[api] getPublicKey:result:', event);
-            resolve(event.detail);
-          },
-          { once: true }
-        );
-      } catch (e) {
-        console.log('[api] getPublicKey error:', e);
-        reject({ publicKey: '', success: false, error: e });
-      }
-    });
+    return this.account.address().to_string();
   };
 
-  //   public getBalance = () => {
-  //     return new Promise(async (resolve, reject) => {
-  //       try {
-  //         window.postMessage({action: "getBalance"}, TARGET_ORIGIN)
-  //         window.addEventListener("getBalance:result", function pubKeyListener(event: BalanceResultEvent) {
-  //           console.log("[api] getBalance:result:",event)
-  //           resolve(event.detail)
-  //         }, {once: true})
-  //       } catch(e) {
-  //         console.log("[api] getBalance error:",e)
-  //         reject({ balance: '', success: false, error: e })
-  //       }
-  //     })
-  //   }
+  public async getLatestHeight() {
+    const height = await this.connection.getLatestHeight();
+    return height;
+  }
+
+  public sign(msg: string) {
+    const enc = new TextEncoder();
+    const sig = this.account.sign(enc.encode(msg));
+    return sig.to_string();
+  }
+
+  public verify(msg: string, sig: string) {
+    const enc = new TextEncoder();
+    const signature = Signature.from_string(sig);
+
+    return this.account.verify(enc.encode(msg), signature);
+  }
 }
 
 window.coinbaseAleo = new CoinbaseAleo();
-// window.dispatchEvent(new CustomEvent("loadedCloudConnect"))
