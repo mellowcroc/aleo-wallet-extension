@@ -1,7 +1,6 @@
-import { Account } from '@entropy1729/aleo-js';
-import { NodeConnection } from '@entropy1729/aleo-js';
-import './Popup.css';
+import { Account, NodeConnection } from '@entropy1729/aleo-js';
 import React, { useEffect, useState } from 'react';
+import './Popup.css';
 
 const Popup = () => {
   const account = new Account({ seed: 'ce8b23470222bdee5f894ee77b607391' });
@@ -20,6 +19,7 @@ const Popup = () => {
         const height = await connection.getLatestHeight();
         console.log('height: ', height);
         setLatestHeight(height);
+        window.aleoHeight = height;
       } catch (err) {
         console.log(err);
       }
@@ -32,6 +32,7 @@ const Popup = () => {
         <p>Address: {account.address().to_string()}</p>
         <p>View Key: {account.viewKey().to_string()}</p>
         <p>Current block height: {latestHeight}</p>
+        {/* <button type="button" onClick={sendMessage}>Click</button> */}
       </header>
     </div>
   );
